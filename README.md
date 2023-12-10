@@ -18,7 +18,7 @@ This script is for installing Docker Engine in Windows Computers, without requir
 
 All the best!
 
-**Suresh Madadha**
-Email: msuresh007@gmail.com
-LinkedIn: https://www.linkedin.com/in/suresh-madadha/ 
+**Suresh Madadha**   
+Email: msuresh007@gmail.com   
+LinkedIn: https://www.linkedin.com/in/suresh-madadha/   
  
