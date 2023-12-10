@@ -1,8 +1,37 @@
 
+#######################################################################
+# Script Name: InstallDockerEngineAndDependencies.ps1
+# Author: Suresh Madadha
+# Description: Installs Docker Engine in Windows Computer in one go!
+#
+# Disclaimer:
+# This PowerShell script is provided as-is without any warranty. Use at
+# your own risk. The author will not be responsible for any damage or
+# data loss caused by using this script. Ensure you understand the
+# script's functionality before execution and take necessary backups
+# before making any changes to your system.
+#
+# Usage:
+# - Ensure PowerShell Execution Policy allows script execution.
+# - Review the script to understand its actions before running.
+# - Modify variables or configurations as needed for your environment.
+# - Execute the script in a PowerShell environment.
+#
+# Author Contact:
+# Email: msuresh007@gmailcom
+# LinkedIn: https://www.linkedin.com/in/suresh-madadha/ 
+#
+# Version: 1.0
+# Last Updated: Dec 10, 2023
+#######################################################################
+
+
+#-------------------------------------------------- Start of Variables for Initialization --------------------------------------------------#
 $dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-24.0.7.zip"
 $downloadPath = "D:\dockerDownload"
 $dockerInstallPath = "D:\apps"
 $accountName = "MyTest01"
+#-------------------------------------------------- End of  Variables for Initialization --------------------------------------------------#
 
 $groupName = "DockerUsers"
 $daemonjson = @"
