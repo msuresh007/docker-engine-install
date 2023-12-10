@@ -57,30 +57,6 @@ function CreateFolderIfNotExists($folderPath) {
   }
 }
 
-# function to update access control list for named pipe to allow access to non-admin users
-# function UpdateNamedPipeAccessControlList($namedPipePath, $accountName) {
-
-#   $dinfo = New-Object System.IO.DirectoryInfo $namedPipePath
-#   $acl = $dinfo.GetAccessControl()
-#   $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($accountName, "FullControl", "Allow")))
-#   $dinfo.SetAccessControl($acl)
-# }
-
-function UpdateNamedPipeAccessControlList($namedPipePath, $accountName) {
-
-  # Use the Get-Acl cmdlet to retrieve the Access Control List (ACL)
-  $acl = Get-Acl -Path $namedPipePath
-
-  # Create a new FileSystemAccessRule object
-  $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($accountName, "FullControl", "Allow")
-
-  # Add the access rule to the ACL
-  $acl.AddAccessRule($accessRule)
-
-  # Set the ACL on the named pipe
-  Set-Acl -Path $namedPipePath -AclObject $acl
-}
-
 function CheckUserGroupMembership($winGroupName, $userName) {
   $groupMembers = Get-LocalGroupMember -Group "$winGroupName"  -ErrorAction SilentlyContinue
   if ($null -ne $groupMembers) {
@@ -130,24 +106,17 @@ CreateFolderIfNotExists($downloadPath)
 CreateFolderIfNotExists($dockerInstallPath)
 
 # install wsl kernel
-# https://learn.microsoft.com/en-us/windows/wsl/install-manual 
-# https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi 
-
-# check if wsl is installed. if not install and enable it
-#wsl -l -v
-#wsl --set-default-version 2
-#wsl --update
-
+Write-Output "Installing WSL kernel"
 wsl --install -d Ubuntu-22.04
 wsl --set-default-version 2
 
 
 if (!(Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux).State -eq 1) {
-  Write-Output "Installing WSL"
-  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
+  Write-Output "Enabling WSL"
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All
 }
 
-Write-Output "Enabling WSL"
+Write-Output "Enabling VirtualMachinePlatform"
 Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 
 Write-Output "Enabling Hyper-V"
@@ -156,11 +125,9 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 Write-Output "Enabling Containers"
 Enable-WindowsOptionalFeature -Online -FeatureName containers -All
 
-#enable Windows Subsystem for Linux 2
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All    
 
 
-Write-Output "Enabling WSL 2"
+Write-Output "Setting WSL default version to 2"
 wsl --set-default-version 2
 
 #download the zip file
@@ -213,11 +180,9 @@ Write-Host "Updated PATH variable:"
 Write-Host $updatedPath
 
 
-#create a daemon.json file in $dockerInstallPath\docker\daemon.json and override if already exists
-# Write-Output "Creating daemon.json file"
-# New-Item -Path "$dockerInstallPath\docker\daemon.json" -ItemType File -Force
 
 #write $daemonjson to the file
+Write-Output "Creating daemon.json file"
 Write-Output $daemonjson | Out-File -FilePath "$dockerInstallPath\docker\daemon.json" -Force
 
 
@@ -241,45 +206,15 @@ AddUserToGroup($groupName, $accountName)
 Write-Output "Users in group $groupName"
 Get-LocalGroupMember -Group $groupName | Select-Object -ExpandProperty Name | ForEach-Object { Write-Output $_ }
 
-
-
-
-# Write-Output "Registering service"
-# Start-Process -FilePath "$dockerInstallPath\docker\dockerd.exe" -ArgumentList "--run-service --service-name docker -G Users --config-file $dockerInstallPath\docker\daemon.json --log-level debug" -Wait -NoNewWindow
-#Start-Process -FilePath "$dockerInstallPath\docker\dockerd.exe" -ArgumentList "--run-service --service-name docker -G DockerUsers --config-file $dockerInstallPath\docker\daemon.json" -NoNewWindow -Wait
-
-#registering the service
-#Start-Process -FilePath "$dockerInstallPath\docker\dockerd.exe" -ArgumentList "--register-service" -NoNewWindow -Wait
-
+Write-Output "Registering docker service"
 Start-Process -FilePath "$dockerInstallPath\docker\dockerd.exe" -ArgumentList "--register-service --service-name docker -G Users --config-file $dockerInstallPath\docker\daemon.json --log-level debug" -Wait -NoNewWindow
 
-# find all the named pipes that have docker in the name
-# $namedPipes = Get-ChildItem -Path \\.\pipe\ | Where-Object { $_.Name -like "*docker*" }
-
-# update the access control list for each named pipe to allow access to non-admin users
-# foreach ($namedPipe in $namedPipes) {  
-#   Write-Output "Updating access control list for named pipe $($namedPipe.Name)"
-#   prefix the directory path to named pipe name and store it in full path
-#   $fullPath = Join-Path -Path "\\.\pipe\" -ChildPath $namedPipe.Name
-
-#   check if namedpipe exists
-#   if (!(Test-Path $fullPath)) {
-#     Write-Output "Named pipe $fullPath does not exist"
-#     create it with full access to everybody
-#     Write-Output "Creating named pipe $fullPath"
-#     New-Item -Path $fullPath -ItemType File -Force
-#   }
-
-#   Write-Output "Full path of named pipe is $fullPath"
-#   UpdateNamedPipeAccessControlList($fullPath, $accountName)
-# }
-
-
+Write-Output "Setting docker service to start automatically"
 #starting the service
 Start-Service -Name docker
 
-# stop service and delete it
-#Stop-Service docker
-#sc.exe delete docker
-
 Write-Output "Docker installed successfully"
+
+Write-Output "you can run below command to check if docker is running"
+Write-Output "docker run hello-world"
+
