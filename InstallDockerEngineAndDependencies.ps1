@@ -27,7 +27,7 @@
 
 
 #-------------------------------------------------- Start of Variables for Initialization --------------------------------------------------#
-$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-24.0.7.zip"
+$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-27.2.1.zip"
 $downloadPath = "D:\dockerDownload"
 $dockerInstallPath = "D:\apps"
 $accountName = "MyTest01"
