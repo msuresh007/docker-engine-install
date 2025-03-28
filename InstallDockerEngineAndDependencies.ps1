@@ -27,7 +27,8 @@
 
 
 #-------------------------------------------------- Start of Variables for Initialization --------------------------------------------------#
-$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-27.2.1.zip"
+# check https://download.docker.com/win/static/stable/x86_64 for latest version of docker engine
+$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-28.0.4.zip"
 $downloadPath = "D:\dockerDownload"
 $dockerInstallPath = "D:\apps"
 $accountName = "MyTest01"
@@ -116,12 +117,20 @@ if (!(Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsyste
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All
 }
 
+# Required for both WSL2 and Hyper-V backends.
+# Needed if you plan to use WSL2 as the backend for Docker.
 Write-Output "Enabling VirtualMachinePlatform"
 Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 
+# Required ONLY if using the Hyper-V backend instead of WSL2.
+# Hyper-V is an alternative to WSL2 for running Docker virtual machines.
+# This is needed if you plan to use Windows-native virtualization instead of WSL2.
 Write-Output "Enabling Hyper-V"
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 
+# Required ONLY if running Windows containers (not needed for Linux containers).
+# Needed when running native Windows-based Docker containers instead of Linux containers.
+# If you only plan to run Linux containers using WSL2 or Hyper-V, this is not required.
 Write-Output "Enabling Containers"
 Enable-WindowsOptionalFeature -Online -FeatureName containers -All
 
