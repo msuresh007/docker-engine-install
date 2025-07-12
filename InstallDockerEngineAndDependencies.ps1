@@ -21,14 +21,14 @@
 # Email: msuresh007@gmailcom
 # LinkedIn: https://www.linkedin.com/in/suresh-madadha/ 
 #
-# Version: 1.0
-# Last Updated: Dec 10, 2023
+# Version: 2.0
+# Last Updated: Jul 12, 2025
 #######################################################################
 
 
 #-------------------------------------------------- Start of Variables for Initialization --------------------------------------------------#
 # check https://download.docker.com/win/static/stable/x86_64 for latest version of docker engine
-$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-28.0.4.zip"
+$dockerZipFileURL = "https://download.docker.com/win/static/stable/x86_64/docker-28.3.2.zip"
 $downloadPath = "D:\dockerDownload"
 $dockerInstallPath = "D:\apps"
 $accountName = "MyTest01"
@@ -108,7 +108,7 @@ CreateFolderIfNotExists($dockerInstallPath)
 
 # install wsl kernel
 Write-Output "Installing WSL kernel"
-wsl --install -d Ubuntu-22.04
+wsl --install -d Ubuntu-24.04
 wsl --set-default-version 2
 
 
@@ -125,14 +125,14 @@ Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 # Required ONLY if using the Hyper-V backend instead of WSL2.
 # Hyper-V is an alternative to WSL2 for running Docker virtual machines.
 # This is needed if you plan to use Windows-native virtualization instead of WSL2.
-Write-Output "Enabling Hyper-V"
-Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+# Write-Output "Enabling Hyper-V"
+# Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 
 # Required ONLY if running Windows containers (not needed for Linux containers).
 # Needed when running native Windows-based Docker containers instead of Linux containers.
 # If you only plan to run Linux containers using WSL2 or Hyper-V, this is not required.
-Write-Output "Enabling Containers"
-Enable-WindowsOptionalFeature -Online -FeatureName containers -All
+# Write-Output "Enabling Containers"
+# Enable-WindowsOptionalFeature -Online -FeatureName containers -All
 
 
 
